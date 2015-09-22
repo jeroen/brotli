@@ -1,6 +1,7 @@
 PKG_CPPFLAGS= -Ienc -Idec
 PKG_LIBS= -L. -lenc -ldec
-CXX_STD= CXX1X
+CXX_FLAGS=-std=c++11
+#CXX_STD= CXX1X
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 	enc/encode.o enc/encode_parallel.o enc/entropy_encode.o enc/streams.o \
