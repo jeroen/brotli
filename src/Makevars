@@ -1,0 +1,23 @@
+PKG_CPPFLAGS= -Ienc -Idec
+PKG_LIBS= -L. -lenc -ldec
+CXX_STD= CXX1X
+
+LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
+	enc/encode.o enc/encode_parallel.o enc/entropy_encode.o enc/streams.o \
+	enc/histogram.o enc/literal_cost.o enc/metablock.o enc/static_dict.o
+
+LIBDEC= dec/bit_reader.o dec/decode.o dec/huffman.o dec/state.o dec/streams.o
+
+$(SHLIB): clean libdec.a libenc.a
+
+clean:
+	rm -f $(LIBENC) $(LIBDEC)
+	rm -f *.o *.a *.so *.dll
+
+libenc.a: $(LIBENC)
+	$(AR) rcs libenc.a $(LIBENC)
+
+libdec.a: $(LIBDEC)
+	$(AR) rcs libdec.a $(LIBDEC)
+
+
