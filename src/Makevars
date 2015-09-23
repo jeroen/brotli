@@ -1,4 +1,3 @@
-PKG_CPPFLAGS= -Ienc -Idec
 PKG_LIBS= -L. -lenc -ldec
 PKG_CXXFLAGS=-std=c++11 -Wno-sign-compare
 #CXX_STD= CXX1X
@@ -9,7 +8,7 @@ LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 
 LIBDEC= dec/bit_reader.o dec/decode.o dec/huffman.o dec/state.o dec/streams.o
 
-$(SHLIB): clean libdec.a libenc.a
+$(SHLIB): libdec.a libenc.a
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
