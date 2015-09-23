@@ -2,4 +2,5 @@
 
 export(brotli_decode)
 export(brotli_encode)
+useDynLib(brotli,R_brotli_decode)
 useDynLib(brotli,R_brotli_encode)

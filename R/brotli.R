@@ -22,9 +22,9 @@ brotli_encode <- function(from, mode = c("generic", "text", "font"), quality = 1
 }
 
 #' @export
-#' @useDynLib brotli R_brotli_encode
+#' @useDynLib brotli R_brotli_decode
 #' @rdname brotli
 brotli_decode <- function(from){
   stopifnot(is.raw(from))
-  .Call(R_brotli_encode, from)
+  .Call(R_brotli_decode, from)
 }
