@@ -3,7 +3,6 @@
 #include "enc/encode.h"
 #include "dec/decode.h"
 
-#define BROTLI_VERSION "0.1.0"
 using namespace brotli;
 
 /* export to C */
