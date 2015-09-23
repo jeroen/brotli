@@ -19,10 +19,10 @@ SEXP R_brotli_encode(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log_b
 
   /* compression options */
   BrotliParams params;
-  params.mode = (BrotliParams::Mode) asInteger(mode);
-  params.quality = asInteger(quality);
-  params.lgwin = asInteger(log_win);
-  params.lgblock = asInteger(log_block);
+  //params.mode = (BrotliParams::Mode) asInteger(mode);
+  //params.quality = asInteger(quality);
+  //params.lgwin = asInteger(log_win);
+  //params.lgblock = asInteger(log_block);
 
   /* setup output */
   size_t output_length = 1.2 * length + 10240;

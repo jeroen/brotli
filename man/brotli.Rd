@@ -2,17 +2,32 @@
 % Please edit documentation in R/brotli.R
 \name{brotli}
 \alias{brotli}
-\alias{brotli_decode}
-\alias{brotli_encode}
+\alias{brotli_compress}
+\alias{brotli_decompress}
 \title{Brotli Compression}
 \usage{
-brotli_encode(from, mode = c("generic", "text", "font"), quality = 11,
+brotli_compress(from, mode = c("generic", "text", "font"), quality = 11,
   log_win = 22, log_block = 0)
 
-brotli_decode(from)
+brotli_decompress(from)
 }
 \description{
-Compress and decompress binary data with Brotli.
+Compress and decompress binary data with \href{https://github.com/google/brotli}{brotli}. It
+is supposed to perform better than other algorithms, but doesn't seem to work very well :)
+}
+\examples{
+# Simple example
+x <- serialize(iris, NULL)
+y <- brotli_compress(x)
+stopifnot(identical(x, brotli_decompress(y)))
+
+# Compare to other algorithms
+length(x)
+length(brotli_compress(x))
+length(brotli_compress(x, mode = "font"))
+length(memCompress(x, "gzip"))
+length(memCompress(x, "bzip2"))
+length(memCompress(x, "xz"))
 }
 \seealso{
 memCompress
