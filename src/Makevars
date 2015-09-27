@@ -1,6 +1,5 @@
 PKG_LIBS= -L. -lenc -ldec
-PKG_CXXFLAGS=-std=c++11 -Wno-sign-compare
-#CXX_STD= CXX1X
+PKG_CXXFLAGS=$(CXX1XSTD) -Wno-sign-compare
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 	enc/encode.o enc/encode_parallel.o enc/entropy_encode.o enc/streams.o \
@@ -9,6 +8,8 @@ LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 LIBDEC= dec/bit_reader.o dec/decode.o dec/huffman.o dec/state.o dec/streams.o
 
 $(SHLIB): libdec.a libenc.a
+
+$(OBJECTS): clean
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
