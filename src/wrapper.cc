@@ -6,11 +6,11 @@
 using namespace brotli;
 
 /* export to C */
-extern "C" SEXP R_brotli_encode(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log_block);
-extern "C" SEXP R_brotli_decode(SEXP buf);
+extern "C" SEXP R_brotli_compress(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log_block);
+extern "C" SEXP R_brotli_decompress(SEXP buf);
 
 /* C++ function */
-SEXP R_brotli_encode(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log_block){
+SEXP R_brotli_compress(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log_block){
 
   /* input buffer */
   size_t length = LENGTH(buf);
@@ -44,7 +44,7 @@ int output_callback(void* data, const uint8_t* buf, size_t count) {
   return (int)count;
 }
 
-SEXP R_brotli_decode(SEXP buf){
+SEXP R_brotli_decompress(SEXP buf){
 
   /* input buffer */
   size_t length = LENGTH(buf);

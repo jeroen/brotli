@@ -1,9 +1,14 @@
 Package: brotli
 Type: Package
-Title: What the Package Does (Title Case)
+Title: A Compression Format Optimized for the Web
 Version: 0.1
-Date: 2015-09-22
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Authors@R: c(
+    person("Jeroen", "Ooms", ,"jeroen.ooms@stat.ucla.edu", role = c("aut", "cre")),
+    person("Google, Inc", role = "cph", comment = "Brotli C++ library")
+  )
+Description: Brotli is a lossless compressed data format that compresses data using
+    a combination of the LZ77 algorithm and Huffman coding, with efficiency comparable
+    to the best currently available general-purpose compression methods. It is similar
+    in speed with deflate but offers more dense compression.
+License: Apache License 2.0
+URL: http://www.ietf.org/id/draft-alakuijala-brotli-05.txt https://github.com/google/brotli

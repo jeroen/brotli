@@ -2,5 +2,5 @@
 
 export(brotli_compress)
 export(brotli_decompress)
-useDynLib(brotli,R_brotli_decode)
-useDynLib(brotli,R_brotli_encode)
+useDynLib(brotli,R_brotli_compress)
+useDynLib(brotli,R_brotli_decompress)

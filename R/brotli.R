@@ -1,27 +1,38 @@
 #' Brotli Compression
 #'
-#' Compress and decompress binary data with \href{https://github.com/google/brotli}{brotli}. It
-#' is supposed to perform better than other algorithms, but doesn't seem to work very well :)
+#' \href{https://github.com/google/brotli}{Brotli} is a new compression algorithm
+#' optimized for the web, in particular small text documents. Decompression is at
+#' least as fast as for gzip while significantly improving the compression ratio.
+#' The price we pay is that compression is much slower than gzip. Brotli is therefore
+#' mainly useful for serving static content such as fonts and html pages. For binary
+#' (non-text) data, the compression ratio of Brotli usually does not beat
+#' \code{bz2} or \code{xz (lzma)}, however decompression for these algorithms is too
+#' slow for browsers.
 #'
 #' @export
 #' @seealso memCompress
-#' @useDynLib brotli R_brotli_encode
+#' @useDynLib brotli R_brotli_compress
 #' @name brotli
 #' @rdname brotli
+#' @param buf raw vector with data to compress/decompress
+#' @param mode which compression strategy to use
+#' @param quality value between 0 and 22
+#' @param log_win log of window size
+#' @param log_block log of block size
 #' @examples # Simple example
-#' x <- serialize(iris, NULL)
+#' myfile <- file.path(R.home(), "COPYING")
+#' x <- readBin(myfile, raw(), file.info(myfile)$size)
 #' y <- brotli_compress(x)
 #' stopifnot(identical(x, brotli_decompress(y)))
 #'
 #' # Compare to other algorithms
 #' length(x)
 #' length(brotli_compress(x))
-#' length(brotli_compress(x, mode = "font"))
 #' length(memCompress(x, "gzip"))
 #' length(memCompress(x, "bzip2"))
 #' length(memCompress(x, "xz"))
-brotli_compress <- function(from, mode = c("generic", "text", "font"), quality = 11, log_win = 22, log_block = 0){
-  stopifnot(is.raw(from));
+brotli_compress <- function(buf, mode = c("generic", "text", "font"), quality = 11, log_win = 22, log_block = 0){
+  stopifnot(is.raw(buf));
   mode <- switch(match.arg(mode),
     generic = 0L,
     text = 1L,
@@ -31,13 +42,13 @@ brotli_compress <- function(from, mode = c("generic", "text", "font"), quality =
   stopifnot(is.numeric(quality))
   stopifnot(is.numeric(log_win))
   stopifnot(is.numeric(log_block))
-  .Call(R_brotli_encode, from, mode, quality, log_win, log_block)
+  .Call(R_brotli_compress, buf, mode, quality, log_win, log_block)
 }
 
 #' @export
-#' @useDynLib brotli R_brotli_decode
+#' @useDynLib brotli R_brotli_decompress
 #' @rdname brotli
-brotli_decompress <- function(from){
-  stopifnot(is.raw(from))
-  .Call(R_brotli_decode, from)
+brotli_decompress <- function(buf){
+  stopifnot(is.raw(buf))
+  .Call(R_brotli_decompress, buf)
 }
