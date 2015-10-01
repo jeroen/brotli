@@ -11,4 +11,5 @@ Description: Brotli is a lossless compressed data format that compresses data us
     to the best currently available general-purpose compression methods. It is similar
     in speed with deflate but offers more dense compression.
 License: Apache License 2.0
-URL: http://www.ietf.org/id/draft-alakuijala-brotli-05.txt https://github.com/google/brotli
+URL: http://www.ietf.org/id/draft-alakuijala-brotli https://github.com/google/brotli
+BugReports: http://github.com/jeroenooms/brotli/issues
