@@ -1,7 +1,7 @@
 Package: brotli
 Type: Package
 Title: A Compression Format Optimized for the Web
-Version: 0.1.9000
+Version: 0.2
 Authors@R: c(
     person("Jeroen", "Ooms", ,"jeroen.ooms@stat.ucla.edu", role = c("aut", "cre")),
     person("Google, Inc", role = "cph", comment = "Brotli C++ library")
