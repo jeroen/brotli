@@ -1,14 +1,15 @@
 PKG_LIBS= -L. -lenc -ldec
+PKG_CXXFLAGS=-Wno-sign-compare
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 	enc/encode.o enc/encode_parallel.o enc/entropy_encode.o enc/streams.o \
-	enc/histogram.o enc/literal_cost.o enc/metablock.o enc/static_dict.o
+	enc/histogram.o enc/literal_cost.o enc/metablock.o enc/static_dict.o enc/utf8_util.o
 
 LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o dec/streams.o
 
 $(SHLIB): libdec.a libenc.a
 
-##$(OBJECTS): clean
+$(OBJECTS): clean
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
