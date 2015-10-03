@@ -1,2 +1,0 @@
-# Some weird bug R for windows, vignettes don't work
-rm -Rf vignettes
