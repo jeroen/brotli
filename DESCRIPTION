@@ -15,3 +15,4 @@ License: Apache License 2.0
 URL: http://www.ietf.org/id/draft-alakuijala-brotli https://github.com/google/brotli
 BugReports: http://github.com/jeroenooms/brotli/issues
 VignetteBuilder: R.rsp
+Suggests: R.rsp
