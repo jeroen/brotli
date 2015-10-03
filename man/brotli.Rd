@@ -16,7 +16,7 @@ brotli_decompress(buf)
 
 \item{mode}{which compression strategy to use}
 
-\item{quality}{value between 0 and 22}
+\item{quality}{value between 0 and 11}
 
 \item{log_win}{log of window size}
 
@@ -24,12 +24,17 @@ brotli_decompress(buf)
 }
 \description{
 Brotli is a compression algorithm optimized for the web, in particular small text
-documents. Decompression is at least as fast as for gzip while significantly
+documents.
+}
+\details{
+Brotli decompression is at least as fast as for gzip while significantly
 improving the compression ratio. The price we pay is that compression is much
-slower than gzip. Brotli is therefore mainly useful for serving static content
-such as fonts and html pages. For binary (non-text) data, the compression ratio
-of Brotli usually does not beat \code{bz2} or \code{xz (lzma)}, however decompression
-for these algorithms is too slow for browsers.
+slower than gzip. Brotli is therefore most effective for serving static content
+such as fonts and html pages.
+
+For binary (non-text) data, the compression ratio of Brotli usually does not beat
+\code{bz2} or \code{xz (lzma)}, however decompression for these algorithms is too
+slow for browsers in e.g. mobile devices.
 }
 \examples{
 # Simple example
@@ -46,7 +51,7 @@ length(memCompress(x, "bzip2"))
 length(memCompress(x, "xz"))
 }
 \references{
-J. Alakuijala and Z. Szabadka (September 2015). \emph{Brotli Compressed
+J. Alakuijala and Z. Szabadka (October 2015). \emph{Brotli Compressed
 Data Format}. IETF Internet Draft \url{http://www.ietf.org/id/draft-alakuijala-brotli}.
 }
 \seealso{

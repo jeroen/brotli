@@ -1,12 +1,16 @@
 #' Brotli Compression
 #'
 #' Brotli is a compression algorithm optimized for the web, in particular small text
-#' documents. Decompression is at least as fast as for gzip while significantly
+#' documents.
+#'
+#' Brotli decompression is at least as fast as for gzip while significantly
 #' improving the compression ratio. The price we pay is that compression is much
-#' slower than gzip. Brotli is therefore mainly useful for serving static content
-#' such as fonts and html pages. For binary (non-text) data, the compression ratio
-#' of Brotli usually does not beat \code{bz2} or \code{xz (lzma)}, however decompression
-#' for these algorithms is too slow for browsers.
+#' slower than gzip. Brotli is therefore most effective for serving static content
+#' such as fonts and html pages.
+#'
+#' For binary (non-text) data, the compression ratio of Brotli usually does not beat
+#' \code{bz2} or \code{xz (lzma)}, however decompression for these algorithms is too
+#' slow for browsers in e.g. mobile devices.
 #'
 #' @export
 #' @seealso \link{memCompress}
@@ -15,10 +19,10 @@
 #' @rdname brotli
 #' @param buf raw vector with data to compress/decompress
 #' @param mode which compression strategy to use
-#' @param quality value between 0 and 22
+#' @param quality value between 0 and 11
 #' @param log_win log of window size
 #' @param log_block log of block size
-#' @references J. Alakuijala and Z. Szabadka (September 2015). \emph{Brotli Compressed
+#' @references J. Alakuijala and Z. Szabadka (October 2015). \emph{Brotli Compressed
 #' Data Format}. IETF Internet Draft \url{http://www.ietf.org/id/draft-alakuijala-brotli}.
 #' @examples # Simple example
 #' myfile <- file.path(R.home(), "COPYING")
