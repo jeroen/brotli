@@ -10,7 +10,7 @@ LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o
 
 $(SHLIB): libdec.a libenc.a
 
-$(OBJECTS): clean
+##$(OBJECTS): clean
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
