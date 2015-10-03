@@ -7,7 +7,7 @@ Authors@R: c(
     person("Google, Inc", role = "cph", comment = "Brotli C++ library")
   )
 Description: A lossless compressed data format that uses a combination of the LZ77 
-    algorithm and Huffman coding.Brotli is similar in speed to deflate (gzip) but 
+    algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip) but 
     offers more dense compression.
 License: Apache License 2.0
 URL: http://www.ietf.org/id/draft-alakuijala-brotli https://github.com/google/brotli
