@@ -1,5 +1,5 @@
 PKG_LIBS=-L. -lenc -ldec
-PKG_CFLAGS=-DBROTLI_BUILD_PORTABLE
+PKG_CFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
 CXX_STD=CXX11
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
