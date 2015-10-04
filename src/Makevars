@@ -1,5 +1,5 @@
 PKG_LIBS= -L. -lenc -ldec
-PKG_CXXFLAGS=$(CXX1XSTD) -Wno-sign-compare
+CXX_STD= CXX11
 PKG_CFLAGS=-include config.h
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
