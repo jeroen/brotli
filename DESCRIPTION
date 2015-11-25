@@ -1,7 +1,7 @@
 Package: brotli
 Type: Package
 Title: A Compression Format Optimized for the Web
-Version: 0.3.9001
+Version: 0.4
 Authors@R: c(
     person("Jeroen", "Ooms", ,"jeroen.ooms@stat.ucla.edu", role = c("aut", "cre")),
     person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library")
@@ -12,5 +12,5 @@ Description: A lossless compressed data format that uses a combination of the LZ
 License: Apache License 2.0
 URL: http://www.ietf.org/id/draft-alakuijala-brotli https://github.com/google/brotli
 BugReports: http://github.com/jeroenooms/brotli/issues
-VignetteBuilder: R.rsp
-Suggests: R.rsp
+VignetteBuilder: knitr, R.rsp
+Suggests: knitr, R.rsp, microbenchmark, ggplot2
