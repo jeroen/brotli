@@ -1,0 +1,4 @@
+0.5
+  - Updated libbrotli to 82c9e19 (Jan 12, 2016)
+  - Changed license to MIT along with upstream libbrotli
+  - Brotli no longer requires CXX_STD=CXX11 Makevars
