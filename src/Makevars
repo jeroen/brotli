@@ -1,5 +1,7 @@
-PKG_LIBS=-L. -lenc -ldec
+SOLARIS_EXTRA=
+PKG_LIBS=-L. -lenc -ldec $(SOLARIS_EXTRA)
 PKG_CFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
+PKG_CXXFLAGS=$(SOLARIS_EXTRA)
 CXX_STD=CXX1XSTD
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \

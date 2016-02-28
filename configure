@@ -1,0 +1,5 @@
+case "$OSTYPE" in
+  "solaris2.10") sed -i 's/SOLARIS_EXTRA=/SOLARIS_EXTRA=-library=stdcxx4/' src/Makevars;;
+esac
+
+exit 0
