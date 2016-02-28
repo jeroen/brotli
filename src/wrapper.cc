@@ -37,35 +37,21 @@ SEXP R_brotli_compress(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log
   return res;
 }
 
-
-int output_callback(void* data, const uint8_t* buf, size_t count) {
-  std::vector<uint8_t> *output = (std::vector<uint8_t> *)data;
-  output->insert(output->end(), buf, buf + count);
-  return (int)count;
-}
-
 SEXP R_brotli_decompress(SEXP buf){
 
   /* input buffer */
   size_t length = LENGTH(buf);
   uint8_t *input = RAW(buf);
 
-  /* dynamic buffer because output size is unknown */
-  BrotliMemInput memin;
-  BrotliInput in = BrotliInitMemInput(input, length, &memin);
+  /* calculate output length */
+  size_t outlen;
+  if(!BrotliDecompressedSize(length, input, &outlen))
+    Rf_error("Failed to calculate output size");
 
-  BrotliOutput out;
-  std::vector<uint8_t> output;
-  out.cb_ = &output_callback;
-  out.data_ = &output;
-
-  if(!BrotliDecompress(in, out))
-    Rf_error("BrotliDecompress failed");
-
-  /* output R object */
-  size_t output_length = output.size();
-  SEXP res = PROTECT(allocVector(RAWSXP, output_length));
-  memcpy(RAW(res), output.data(), output_length);
-  UNPROTECT(1);
-  return res;
+  /* allocate and execute */
+  SEXP out = allocVector(RAWSXP, outlen);
+  BrotliResult res = BrotliDecompressBuffer(length, input, &outlen, RAW(out));
+  if(res != BROTLI_RESULT_SUCCESS)
+    Rf_error("Failed to decompress buffer");
+  return out;
 }

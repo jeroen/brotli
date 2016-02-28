@@ -193,6 +193,7 @@ BrotliCompressor::BrotliCompressor(BrotliParams params)
       storage_size_(0),
       storage_(0),
       large_table_(NULL),
+      cmd_code_numbits_(0),
       command_buf_(NULL),
       literal_buf_(NULL) {
   // Sanitize params.
@@ -215,9 +216,6 @@ BrotliCompressor::BrotliCompressor(BrotliParams params)
     params_.lgblock = std::min(kMaxInputBlockBits,
                                std::max(kMinInputBlockBits, params_.lgblock));
   }
-
-  // Set maximum distance, see section 9.1. of the spec.
-  max_backward_distance_ = (1 << params_.lgwin) - 16;
 
   // Initialize input and literal cost ring buffers.
   // We allocate at least lgwin + 1 bits for the ring buffer so that the newly
@@ -251,7 +249,7 @@ BrotliCompressor::BrotliCompressor(BrotliParams params)
   }
 
   // Initialize hashers.
-  hash_type_ = std::min(9, params_.quality);
+  hash_type_ = std::min(10, params_.quality);
   hashers_->Init(hash_type_);
 }
 
@@ -327,7 +325,7 @@ void BrotliCompressor::BrotliSetCustomDictionary(
   if (size > 1) {
     prev_byte2_ = dict[size - 2];
   }
-  hashers_->PrependCustomDictionary(hash_type_, size, dict);
+  hashers_->PrependCustomDictionary(hash_type_, params_.lgwin, size, dict);
 }
 
 bool BrotliCompressor::WriteBrotliData(const bool is_last,
@@ -393,8 +391,8 @@ bool BrotliCompressor::WriteBrotliData(const bool is_last,
 
   CreateBackwardReferences(bytes, WrapPosition(last_processed_pos_),
                            is_last, data, mask,
-                           max_backward_distance_,
                            params_.quality,
+                           params_.lgwin,
                            hashers_,
                            hash_type_,
                            dist_cache_,

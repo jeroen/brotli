@@ -7,11 +7,11 @@ LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
 	enc/histogram.o enc/literal_cost.o enc/metablock.o enc/static_dict.o enc/utf8_util.o \
 	enc/compress_fragment.o enc/compress_fragment_two_pass.o
 
-LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o dec/streams.o
+LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o
 
 $(SHLIB): libdec.a libenc.a
 
-#$(OBJECTS): clean
+$(OBJECTS): clean
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
