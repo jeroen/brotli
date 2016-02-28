@@ -1,5 +1,5 @@
 UNAME=`uname`
-case "$OSTYPE" in
+case "$UNAME" in
   "SunOS") perl -pi -w -e 's/SOLARIS_EXTRA=/SOLARIS_EXTRA=-library=stdcxx4/g' src/Makevars;;
 esac
 
