@@ -3,15 +3,15 @@ PKG_CFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
 CXX_STD=CXX1XSTD
 
 LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
-	enc/encode.o enc/encode_parallel.o enc/entropy_encode.o enc/streams.o \
-	enc/histogram.o enc/literal_cost.o enc/metablock.o enc/static_dict.o enc/utf8_util.o \
-	enc/compress_fragment.o enc/compress_fragment_two_pass.o
+	enc/encode.o enc/entropy_encode.o enc/streams.o enc/histogram.o enc/literal_cost.o \
+	enc/metablock.o enc/static_dict.o enc/utf8_util.o enc/compress_fragment.o \
+	enc/compress_fragment_two_pass.o
 
 LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o
 
 $(SHLIB): libdec.a libenc.a
 
-$(OBJECTS): clean
+## $(OBJECTS): clean
 
 clean:
 	rm -f $(LIBENC) $(LIBDEC)
