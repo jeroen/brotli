@@ -1,9 +1,10 @@
+#include "enc/encode.h"
+#include "dec/decode.h"
+
 #define STRICT_R_HEADERS
 #define R_NO_REMAP
 #include <string.h>
 #include <Rinternals.h>
-#include "enc/encode.h"
-#include "dec/decode.h"
 
 using namespace brotli;
 
