@@ -1,4 +1,6 @@
 #include <string.h>
+#define STRICT_R_HEADERS
+#define R_NO_REMAP
 #include <Rinternals.h>
 #include "enc/encode.h"
 #include "dec/decode.h"
@@ -18,10 +20,10 @@ SEXP R_brotli_compress(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log
 
   /* compression options */
   BrotliParams params;
-  params.mode = (BrotliParams::Mode) asInteger(mode);
-  params.quality = asInteger(quality);
-  params.lgwin = asInteger(log_win);
-  params.lgblock = asInteger(log_block);
+  params.mode = (BrotliParams::Mode) Rf_asInteger(mode);
+  params.quality = Rf_asInteger(quality);
+  params.lgwin = Rf_asInteger(log_win);
+  params.lgblock = Rf_asInteger(log_block);
 
   /* setup output */
   size_t output_length = 1.2 * length + 10240;
@@ -30,7 +32,7 @@ SEXP R_brotli_compress(SEXP buf, SEXP mode, SEXP quality, SEXP log_win, SEXP log
     Rf_error("BrotliCompress failed");
 
   /* create r object */
-  SEXP res = PROTECT(allocVector(RAWSXP, output_length));
+  SEXP res = PROTECT(Rf_allocVector(RAWSXP, output_length));
   memcpy(RAW(res), output, output_length);
   delete[] output;
   UNPROTECT(1);
@@ -49,7 +51,7 @@ SEXP R_brotli_decompress(SEXP buf){
     Rf_error("Failed to calculate output size");
 
   /* allocate and execute */
-  SEXP out = allocVector(RAWSXP, outlen);
+  SEXP out = Rf_allocVector(RAWSXP, outlen);
   BrotliResult res = BrotliDecompressBuffer(length, input, &outlen, RAW(out));
   if(res != BROTLI_RESULT_SUCCESS)
     Rf_error("Failed to decompress buffer");
