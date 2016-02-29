@@ -3,7 +3,6 @@
 
 #define STRICT_R_HEADERS
 #define R_NO_REMAP
-#include <string.h>
 #include <Rinternals.h>
 
 using namespace brotli;
