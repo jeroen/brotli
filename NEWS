@@ -1,5 +1,6 @@
 0.6
   - Updated libbrotli to 7e5bbd5 (Feb 28, 2016)
+  - Restore CXX_STD=CXX11 due to a pedantic warning in C++98
 
 0.5
   - Updated libbrotli to 82c9e19 (Jan 12, 2016)
