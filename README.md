@@ -13,6 +13,16 @@
   LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
   but offers more dense compression.
 
+## Documentation
+
+About the R package:
+
+ - Vignette: [Text Compression in R: brotli, gzip, xz and bz2](https://cran.r-project.org/web/packages/brotli/vignettes/benchmarks.html)
+
+Other resources:
+
+ - [Comparison of Brotli, Deflate, Zopfli, LZMA, LZHAM and Bzip2 Compression Algorithms](https://cran.r-project.org/web/packages/brotli/vignettes/brotli-2015-09-22.pdf)
+
 ## Hello World
 
 ```r
