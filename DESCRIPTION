@@ -17,5 +17,6 @@ Suggests:
     knitr,
     R.rsp,
     microbenchmark,
+    rmarkdown,
     ggplot2
 RoxygenNote: 5.0.1
