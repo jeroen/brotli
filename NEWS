@@ -1,3 +1,6 @@
+0.7
+  - Updated libbrotli to 37984ad (June 2, 2016)
+
 0.6
   - Updated libbrotli to af41b90 (Feb 29, 2016)
   - Restore CXX_STD=CXX11 for Solaris

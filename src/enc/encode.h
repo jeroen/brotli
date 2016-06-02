@@ -140,10 +140,6 @@ class BrotliCompressor {
   int* GetHashTable(int quality,
                     size_t input_size, size_t* table_size);
 
-  void WriteMetaBlockInternal(const bool is_last,
-                              size_t* out_size,
-                              uint8_t** output);
-
   BrotliParams params_;
   Hashers* hashers_;
   int hash_type_;
@@ -184,6 +180,8 @@ class BrotliCompressor {
   // Command and literal buffers for quality 1.
   uint32_t* command_buf_;
   uint8_t* literal_buf_;
+  
+  int is_last_block_emitted_;
 };
 
 // Compresses the data in input_buffer into encoded_buffer, and sets
