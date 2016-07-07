@@ -9,8 +9,9 @@ matrix:
     - os: linux
       dist: trusty
       env: R_CODECOV=true
+      r_check_args: '--use-valgrind'
     - os: osx
-      osx_image: xcode7.2
+      osx_image: xcode8
       latex: false
     - os: osx
       osx_image: beta-xcode6.1
@@ -18,6 +19,11 @@ matrix:
 
 r_github_packages:
   - jimhester/covr
+
+addons:
+  apt:
+    packages:
+    - valgrind
 
 warnings_are_errors: true
 #r_check_revdep: true
