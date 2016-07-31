@@ -1,24 +1,26 @@
-PKG_LIBS=-L. -lenc -ldec
-PKG_CFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
-CXX_STD=CXX11
+PKG_LIBS=-L. -lstatbrotli
+PKG_CPPFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
+BINDIR=../inst/bin$(WIN)
+#CXX_STD=CXX11
 
-LIBENC= enc/backward_references.o enc/block_splitter.o enc/brotli_bit_stream.o \
-	enc/encode.o enc/entropy_encode.o enc/streams.o enc/histogram.o enc/literal_cost.o \
-	enc/metablock.o enc/static_dict.o enc/utf8_util.o enc/compress_fragment.o \
-	enc/compress_fragment_two_pass.o
+LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brotli_bit_stream.o \
+	enc/cluster.o enc/compress_fragment_two_pass.o enc/compress_fragment.o enc/encode.o \
+	enc/entropy_encode.o enc/histogram.o enc/literal_cost.o enc/memory.o enc/metablock.o \
+	enc/static_dict.o enc/utf8_util.o \
+	dec/bit_reader.o dec/huffman.o dec/state.o dec/decode.o \
+	common/dictionary.o
 
-LIBDEC= dec/bit_reader.o dec/decode.o dec/dictionary.o dec/huffman.o dec/state.o
+all: clean
 
-$(SHLIB): libdec.a libenc.a
+$(SHLIB): libstatbrotli.a bro
 
-## $(OBJECTS): clean
+libstatbrotli.a: $(LIBBROTLI)
+	$(AR) rcs libstatbrotli.a $(LIBBROTLI)
+
+bro: libstatbrotli.a tools/bro.o
+	mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/bro tools/bro.o $(PKG_LIBS) $(LDFLAGS)
 
 clean:
-	rm -f $(LIBENC) $(LIBDEC)
-	rm -f *.o *.a *.so *.dll
-
-libenc.a: $(LIBENC)
-	$(AR) rcs libenc.a $(LIBENC)
-
-libdec.a: $(LIBDEC)
-	$(AR) rcs libdec.a $(LIBDEC)
+	rm -f $(LIBBROTLI) $(OBJECTS) $(SHLIB) libstatbrotli.a bro
+	rm -Rf $(BINDIR)

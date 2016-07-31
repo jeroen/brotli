@@ -1,5 +1,8 @@
 0.7
-  - Updated libbrotli to 37984ad (June 2, 2016)
+  - Updated libbrotli to 24685f9 (July 28, 2016)
+  - Switch bindings to the libbrotli streaming API
+  - Build and ship the 'bro' executable with the package
+  - Use the new RFC7932 url in package DESCRIPTION
 
 0.6
   - Updated libbrotli to af41b90 (Feb 29, 2016)

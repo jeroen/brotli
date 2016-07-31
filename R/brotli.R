@@ -18,10 +18,8 @@
 #' @name brotli
 #' @rdname brotli
 #' @param buf raw vector with data to compress/decompress
-#' @param mode which compression strategy to use
 #' @param quality value between 0 and 11
-#' @param log_win log of window size
-#' @param log_block log of block size
+#' @param window log of window size
 #' @references J. Alakuijala and Z. Szabadka (October 2015). \emph{Brotli Compressed
 #' Data Format}. IETF Internet Draft \url{http://www.ietf.org/id/draft-alakuijala-brotli}.
 #' @examples # Simple example
@@ -36,18 +34,11 @@
 #' length(memCompress(x, "gzip"))
 #' length(memCompress(x, "bzip2"))
 #' length(memCompress(x, "xz"))
-brotli_compress <- function(buf, mode = c("generic", "text", "font"), quality = 11, log_win = 22, log_block = 0){
+brotli_compress <- function(buf, quality = 11, window = 22){
   stopifnot(is.raw(buf));
-  mode <- switch(match.arg(mode),
-    generic = 0L,
-    text = 1L,
-    font = 2L,
-    stop("Invalid mode")
-  )
   stopifnot(is.numeric(quality))
-  stopifnot(is.numeric(log_win))
-  stopifnot(is.numeric(log_block))
-  .Call(R_brotli_compress, buf, mode, quality, log_win, log_block)
+  stopifnot(is.numeric(window))
+  .Call(R_brotli_compress, buf, as.integer(quality), as.integer(window))
 }
 
 #' @export
@@ -56,4 +47,19 @@ brotli_compress <- function(buf, mode = c("generic", "text", "font"), quality = 
 brotli_decompress <- function(buf){
   stopifnot(is.raw(buf))
   .Call(R_brotli_decompress, buf)
+}
+
+
+# serialize(iris, brofile("~/Desktop/test2.bro", "wb"))
+# res <- unserialize(brofile("~/Desktop/test2.bro", "rb"))
+brofile <- function(file, open = ""){
+  if(grepl("r", open)){
+    bro <- system.file("bin/bro", package = "brotli")
+    pipe(paste(bro, "--input", file), open = open)
+  } else if(grepl("w", open)){
+    bro <- system.file("bin/bro", package = "brotli")
+    pipe(paste(bro, "--output", file), open = open)
+  } else {
+    stop("Connection must be opened as readable or writeable")
+  }
 }

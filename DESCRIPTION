@@ -10,7 +10,7 @@ Description: A lossless compressed data format that uses a combination of the
     LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
     but offers more dense compression.
 License: MIT + file LICENSE
-URL: http://www.ietf.org/id/draft-alakuijala-brotli https://github.com/google/brotli
+URL: https://tools.ietf.org/html/rfc7932 https://github.com/google/brotli#readme
 BugReports: http://github.com/jeroenooms/brotli/issues
 VignetteBuilder: knitr, R.rsp
 Suggests:

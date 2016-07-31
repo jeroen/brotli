@@ -21,6 +21,7 @@ About the R package:
 
 Other resources:
 
+ - [RFC 7932: Brotli Compressed Data Format](https://tools.ietf.org/html/rfc7932)
  - [Comparison of Brotli, Deflate, Zopfli, LZMA, LZHAM and Bzip2 Compression Algorithms](https://cran.r-project.org/web/packages/brotli/vignettes/brotli-2015-09-22.pdf)
 
 ## Hello World

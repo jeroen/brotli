@@ -6,21 +6,16 @@
 \alias{brotli_decompress}
 \title{Brotli Compression}
 \usage{
-brotli_compress(buf, mode = c("generic", "text", "font"), quality = 11,
-  log_win = 22, log_block = 0)
+brotli_compress(buf, quality = 11, window = 22)
 
 brotli_decompress(buf)
 }
 \arguments{
 \item{buf}{raw vector with data to compress/decompress}
 
-\item{mode}{which compression strategy to use}
-
 \item{quality}{value between 0 and 11}
 
-\item{log_win}{log of window size}
-
-\item{log_block}{log of block size}
+\item{window}{log of window size}
 }
 \description{
 Brotli is a compression algorithm optimized for the web, in particular small text

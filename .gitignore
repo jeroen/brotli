@@ -7,3 +7,4 @@
 src/*.a
 src/*.o
 src/*.so
+inst/bin
