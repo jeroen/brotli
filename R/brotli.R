@@ -20,8 +20,8 @@
 #' @param buf raw vector with data to compress/decompress
 #' @param quality value between 0 and 11
 #' @param window log of window size
-#' @references J. Alakuijala and Z. Szabadka (October 2015). \emph{Brotli Compressed
-#' Data Format}. IETF Internet Draft \url{http://www.ietf.org/id/draft-alakuijala-brotli}.
+#' @references J. Alakuijala and Z. Szabadka (July 2016). \emph{Brotli Compressed
+#' Data Format}. IETF Internet Draft \url{https://tools.ietf.org/html/rfc7932}.
 #' @examples # Simple example
 #' myfile <- file.path(R.home(), "COPYING")
 #' x <- readBin(myfile, raw(), file.info(myfile)$size)

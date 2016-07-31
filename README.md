@@ -6,7 +6,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroenooms/brotli?branch=master&svg=true)](https://ci.appveyor.com/project/jeroenooms/brotli)
 [![Coverage Status](https://codecov.io/github/jeroenooms/brotli/coverage.svg?branch=master)](https://codecov.io/github/jeroenooms/brotli?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/brotli)](http://cran.r-project.org/package=brotli)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/brotli)](http://cran.r-project.org/web/packages/brotli/index.html)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/brotli)](https://cran.r-project.org/package=brotli)
 [![Github Stars](https://img.shields.io/github/stars/jeroenooms/brotli.svg?style=social&label=Github)](https://github.com/jeroenooms/brotli)
 
 > A lossless compressed data format that uses a combination of the
@@ -44,7 +44,7 @@ length(memCompress(x, "xz"))
 
 ## Installation
 
-The `libbrotli` source code is currently bundled with the package:
+The `libbrotli` source code is bundled with the package:
 
 ```r
 install.package("brotli")
