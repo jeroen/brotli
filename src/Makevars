@@ -1,6 +1,7 @@
 PKG_LIBS=-L. -lstatbrotli
 PKG_CPPFLAGS=-DBROTLI_BUILD_PORTABLE -include config.h
 BINDIR=../inst/bin
+BRO=bro$(WIN)
 #CXX_STD=CXX11
 
 LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brotli_bit_stream.o \
@@ -12,15 +13,15 @@ LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brot
 
 all: clean
 
-$(SHLIB): libstatbrotli.a bro
+$(SHLIB): libstatbrotli.a $(BRO)
+
+$(BRO): libstatbrotli.a tools/bro.o
+	mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/$(BRO) tools/bro.o $(PKG_LIBS) $(LDFLAGS)
 
 libstatbrotli.a: $(LIBBROTLI)
 	$(AR) rcs libstatbrotli.a $(LIBBROTLI)
 
-bro: libstatbrotli.a tools/bro.o
-	mkdir -p $(BINDIR)
-	$(CXX) -o $(BINDIR)/bro$(WIN) tools/bro.o $(PKG_LIBS) $(LDFLAGS)
-
 clean:
-	rm -f $(LIBBROTLI) $(OBJECTS) $(SHLIB) libstatbrotli.a bro
+	rm -f $(LIBBROTLI) $(OBJECTS) $(SHLIB) $(BRO) tools/bro.o libstatbrotli.a
 	rm -Rf $(BINDIR)
