@@ -46,8 +46,8 @@ length(memCompress(x, "bzip2"))
 length(memCompress(x, "xz"))
 }
 \references{
-J. Alakuijala and Z. Szabadka (October 2015). \emph{Brotli Compressed
-Data Format}. IETF Internet Draft \url{http://www.ietf.org/id/draft-alakuijala-brotli}.
+J. Alakuijala and Z. Szabadka (July 2016). \emph{Brotli Compressed
+Data Format}. IETF Internet Draft \url{https://tools.ietf.org/html/rfc7932}.
 }
 \seealso{
 \link{memCompress}
