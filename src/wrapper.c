@@ -16,7 +16,7 @@ SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
 
   uint8_t * buf = NULL;
   size_t total_out = 0;
-  size_t bufsize = 65536;
+  size_t bufsize = 256;
   const uint8_t* next_in = RAW(x);
   size_t available_in = Rf_length(x);
   BROTLI_BOOL success;
@@ -30,13 +30,14 @@ SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
       &available_in, &next_in, &available_out, &next_out, &total_out);
     done = BrotliEncoderIsFinished(state);
     //Rprintf("available_in: %9d - available_out: %9d - total_out: %9d\n", available_in, available_out, total_out);
-  } while(success && available_in && !done);
+  } while(success && !done);
 
   /* Check if completed successfully */
   BrotliEncoderDestroyInstance(state);
   if(!success || !done || available_in){
     free(buf);
-    Rf_error("Encoding error");
+    if(!success) Rf_error("Encoding error: !success");
+    if(!done) Rf_error("Encoding error: !done");
   }
 
   /* Return output */
@@ -54,11 +55,11 @@ SEXP R_brotli_decompress(SEXP x){
 
   /* init output */
   size_t total_out = 0;
-  size_t bufsize = 65536;
+  size_t bufsize = 256;
   BrotliState* state = BrotliCreateState(NULL, NULL, NULL);
   BrotliResult res = BROTLI_RESULT_NEEDS_MORE_OUTPUT;
   uint8_t * buf = NULL;
-  while(res == BROTLI_RESULT_NEEDS_MORE_OUTPUT && available_in > 0) {
+  while(res == BROTLI_RESULT_NEEDS_MORE_OUTPUT) {
     bufsize = 2 * bufsize;
     buf = realloc(buf, bufsize);
     size_t available_out = bufsize - total_out;
@@ -71,7 +72,7 @@ SEXP R_brotli_decompress(SEXP x){
   BrotliDestroyState(state);
   if(res != BROTLI_RESULT_SUCCESS){
     free(buf);
-    if(res == BROTLI_RESULT_NEEDS_MORE_INPUT || res == BROTLI_RESULT_NEEDS_MORE_OUTPUT)
+    if(res == BROTLI_RESULT_NEEDS_MORE_INPUT)
       Rf_error("Botli decode failed: incomplete input");
     if(res == BROTLI_RESULT_ERROR)
       Rf_error("Botli decode failed: bad data");
