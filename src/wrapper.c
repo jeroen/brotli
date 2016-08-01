@@ -22,13 +22,13 @@ SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
   BROTLI_BOOL success;
   BROTLI_BOOL done;
   do {
-    bufsize = 2 * bufsize;
     buf = realloc(buf, bufsize);
     size_t available_out = bufsize - total_out;
     uint8_t * next_out = buf + total_out;
     success = BrotliEncoderCompressStream(state, BROTLI_OPERATION_FINISH,
       &available_in, &next_in, &available_out, &next_out, &total_out);
     done = BrotliEncoderIsFinished(state);
+    bufsize = 2 * bufsize;
     //Rprintf("available_in: %9d - available_out: %9d - total_out: %9d\n", available_in, available_out, total_out);
   } while(success && !done);
 
@@ -59,13 +59,13 @@ SEXP R_brotli_decompress(SEXP x){
   BrotliResult res = BROTLI_RESULT_NEEDS_MORE_OUTPUT;
   uint8_t * buf = NULL;
   while(res == BROTLI_RESULT_NEEDS_MORE_OUTPUT) {
-    bufsize = 2 * bufsize;
     buf = realloc(buf, bufsize);
     size_t available_out = bufsize - total_out;
     uint8_t * next_out = buf + total_out;
     res = BrotliDecompressStream(
       &available_in, &next_in, &available_out,
       &next_out, &total_out, state);
+    bufsize = 2 * bufsize;
     //Rprintf("available_in: %9d - available_out: %9d - total_out: %9d\n", available_in, available_out, total_out);
   }
   BrotliDestroyState(state);
