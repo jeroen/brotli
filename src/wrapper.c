@@ -36,8 +36,7 @@ SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
   BrotliEncoderDestroyInstance(state);
   if(!success || !done || available_in){
     free(buf);
-    if(!success) Rf_error("Encoding error: !success");
-    if(!done) Rf_error("Encoding error: !done");
+    Rf_error("Brotli encoding error");
   }
 
   /* Return output */
