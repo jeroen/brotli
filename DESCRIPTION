@@ -3,7 +3,7 @@ Type: Package
 Title: A Compression Format Optimized for the Web
 Version: 0.8.9000
 Authors@R: c(
-    person("Jeroen", "Ooms", ,"jeroen.ooms@stat.ucla.edu", role = c("aut", "cre")),
+    person("Jeroen", "Ooms", ,"jeroen@berkeley.edu", role = c("aut", "cre")),
     person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library")
   )
 Description: A lossless compressed data format that uses a combination of the
@@ -11,7 +11,7 @@ Description: A lossless compressed data format that uses a combination of the
     but offers more dense compression.
 License: MIT + file LICENSE
 URL: https://tools.ietf.org/html/rfc7932 https://github.com/google/brotli#readme
-BugReports: http://github.com/jeroenooms/brotli/issues
+BugReports: http://github.com/jeroen/brotli/issues
 VignetteBuilder: knitr, R.rsp
 Suggests:
     knitr,

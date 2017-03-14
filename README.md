@@ -2,12 +2,12 @@
 
 ##### *A New Format for Lossless and Lossy Image Compression*
 
-[![Build Status](https://travis-ci.org/jeroenooms/brotli.svg?branch=master)](https://travis-ci.org/jeroenooms/brotli)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroenooms/brotli?branch=master&svg=true)](https://ci.appveyor.com/project/jeroenooms/brotli)
-[![Coverage Status](https://codecov.io/github/jeroenooms/brotli/coverage.svg?branch=master)](https://codecov.io/github/jeroenooms/brotli?branch=master)
+[![Build Status](https://travis-ci.org/jeroen/brotli.svg?branch=master)](https://travis-ci.org/jeroen/brotli)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeroen/brotli?branch=master&svg=true)](https://ci.appveyor.com/project/jeroen/brotli)
+[![Coverage Status](https://codecov.io/github/jeroen/brotli/coverage.svg?branch=master)](https://codecov.io/github/jeroen/brotli?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/brotli)](http://cran.r-project.org/package=brotli)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/brotli)](https://cran.r-project.org/package=brotli)
-[![Github Stars](https://img.shields.io/github/stars/jeroenooms/brotli.svg?style=social&label=Github)](https://github.com/jeroenooms/brotli)
+[![Github Stars](https://img.shields.io/github/stars/jeroen/brotli.svg?style=social&label=Github)](https://github.com/jeroen/brotli)
 
 > A lossless compressed data format that uses a combination of the
   LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
