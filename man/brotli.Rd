@@ -52,4 +52,3 @@ Data Format}. IETF Internet Draft \url{https://tools.ietf.org/html/rfc7932}.
 \seealso{
 \link{memCompress}
 }
-
