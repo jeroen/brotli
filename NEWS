@@ -1,3 +1,6 @@
+1.0
+  - Update upstream libbrotli v0.5.2
+
 0.8
   - Updated libbrotli to 24685f9 (July 28, 2016)
   - Switch bindings to the libbrotli streaming API

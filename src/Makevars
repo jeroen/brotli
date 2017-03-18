@@ -7,8 +7,7 @@ BRO=$(BINDIR)/bro$(WIN)
 LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brotli_bit_stream.o \
 	enc/cluster.o enc/compress_fragment_two_pass.o enc/compress_fragment.o enc/encode.o \
 	enc/entropy_encode.o enc/histogram.o enc/literal_cost.o enc/memory.o enc/metablock.o \
-	enc/static_dict.o enc/utf8_util.o \
-	dec/bit_reader.o dec/huffman.o dec/state.o dec/decode.o \
+	enc/static_dict.o enc/utf8_util.o dec/bit_reader.o dec/huffman.o dec/state.o dec/decode.o \
 	common/dictionary.o
 
 all: $(BRO)
