@@ -1,7 +1,7 @@
 Package: brotli
 Type: Package
 Title: A Compression Format Optimized for the Web
-Version: 1.0
+Version: 1.1
 Authors@R: c(
     person("Jeroen", "Ooms", ,"jeroen@berkeley.edu", role = c("aut", "cre")),
     person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library")
@@ -10,7 +10,9 @@ Description: A lossless compressed data format that uses a combination of the
     LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
     but offers more dense compression.
 License: MIT + file LICENSE
-URL: https://tools.ietf.org/html/rfc7932 https://github.com/google/brotli#readme
+URL: https://tools.ietf.org/html/rfc7932 (spec)
+    https://github.com/google/brotli#readme (upstream)
+    http://github.com/jeroen/brotli#read (devel)
 BugReports: http://github.com/jeroen/brotli/issues
 VignetteBuilder: knitr, R.rsp
 Suggests:

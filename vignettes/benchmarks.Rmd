@@ -9,8 +9,9 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+has_microbenchmark <- isTRUE(require(microbenchmark))
 ```
 
 *Brotli is a new compression algorithm optimized for the web, in particular small text documents. Brotli decompression is at least as fast as for gzip while significantly improving the compression ratio. The price we pay is that compression is much slower than gzip. Brotli is therefore most effective for serving static content such as fonts and html pages.*
@@ -63,7 +64,7 @@ ggplot(alldata, aes(x = algo, fill = algo, y = ratio)) +
 
 Perhaps the most important performance dimension for internet formats is decompression speed. Clients should be able to decompress quickly, even with limited resources such as on browsers and mobile devices. 
 
-```{r}
+```{r, eval = has_microbenchmark}
 library(microbenchmark)
 bm <- microbenchmark(
   memDecompress(y1, "gzip"),
@@ -85,7 +86,7 @@ We see that brotli is very similar to gzip in decompression speed. We also see w
 
 So far Brotli showed the best compression ratio, with decompression performance comparable to gzip. But there is no such thing as a free pastry in Switzerland. Here is the caveat: compressing data with brotli is complex and slow:
 
-```{r}
+```{r, , eval = has_microbenchmark}
 library(microbenchmark)
 bm <- microbenchmark(
   memCompress(x, "gzip"),
