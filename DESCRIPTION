@@ -16,9 +16,11 @@ URL: https://tools.ietf.org/html/rfc7932 (spec)
 BugReports: http://github.com/jeroen/brotli/issues
 VignetteBuilder: knitr, R.rsp
 Suggests:
+    spelling,
     knitr,
     R.rsp,
     microbenchmark,
     rmarkdown,
     ggplot2
 RoxygenNote: 6.0.1
+Language: en-US
