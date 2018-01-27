@@ -11,12 +11,13 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=8, fig.height=4, fig.align = "center") 
 has_microbenchmark <- isTRUE(require(microbenchmark))
 ```
 
-*Brotli is a new compression algorithm optimized for the web, in particular small text documents. Brotli decompression is at least as fast as for gzip while significantly improving the compression ratio. The price we pay is that compression is much slower than gzip. Brotli is therefore most effective for serving static content such as fonts and html pages.*
+<img src="http://1.bp.blogspot.com/-qVXmEU7Dqi4/TxaSwzfpp3I/AAAAAAAAAOo/WKri5ORZNDE/s1600/Br%25C3%25B6tli.jpg" alt="brotli" style="float: right; margin-left: 20px">
 
-![brotli](http://1.bp.blogspot.com/-qVXmEU7Dqi4/TxaSwzfpp3I/AAAAAAAAAOo/WKri5ORZNDE/s1600/Br%25C3%25B6tli.jpg)
+*Brotli is a new compression algorithm optimized for the web, in particular small text documents. Brotli decompression is at least as fast as for gzip while significantly improving the compression ratio. The price we pay is that compression is much slower than gzip. Brotli is therefore most effective for serving static content such as fonts and html pages.*
 
 Let's benchmark some example text data from the [COPYING](https://raw.githubusercontent.com/wch/r-source/trunk/COPYING) file.
 
@@ -86,7 +87,7 @@ We see that brotli is very similar to gzip in decompression speed. We also see w
 
 So far Brotli showed the best compression ratio, with decompression performance comparable to gzip. But there is no such thing as a free pastry in Switzerland. Here is the caveat: compressing data with brotli is complex and slow:
 
-```{r, , eval = has_microbenchmark}
+```{r, eval = has_microbenchmark}
 library(microbenchmark)
 bm <- microbenchmark(
   memCompress(x, "gzip"),
@@ -104,4 +105,4 @@ ggplot(alldata, aes(x = algo, fill = algo, y = compression)) +
 
 Hence we can conclude that Brotli is mostly nice for clients, with decompression performance comparable to gzip while significantly improving the compression ratio. These are powerful properties for serving static content such as fonts and html pages. 
 
-However compression performance, at least for the current implementation, is considerably slower than gzip, which makes Brotli unsuitable for on-the-fly compression in http servers or other data streams.
+However compression performance, at least for the current implementation, is considerably slower than gzip, which makes Brotli less suitable for on-the-fly compression in http servers or other data streams.

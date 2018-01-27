@@ -8,3 +8,4 @@ src/*.a
 src/*.o
 src/*.so
 inst/bin
+inst/doc/*.html
