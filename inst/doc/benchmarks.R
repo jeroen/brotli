@@ -1,6 +1,6 @@
 ## ----setup, include = FALSE----------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-has_microbenchmark <- isTRUE(require(microbenchmark))
+knitr::opts_chunk$set(fig.width=8, fig.height=4, fig.align = "center") 
 
 ## ------------------------------------------------------------------------
 library(brotli)
@@ -33,7 +33,7 @@ ggplot(alldata, aes(x = algo, fill = algo, y = ratio)) +
   geom_bar(color = "white", stat = "identity") +
   xlab("") + ylab("Compressed ratio (less is better)")
 
-## ---- eval = has_microbenchmark------------------------------------------
+## ---- eval = require(microbenchmark)-------------------------------------
 library(microbenchmark)
 bm <- microbenchmark(
   memDecompress(y1, "gzip"),
@@ -48,7 +48,7 @@ ggplot(alldata, aes(x = algo, fill = algo, y = decompression)) +
   geom_bar(color = "white", stat = "identity") +
   xlab("") + ylab("Decompression time (less is better)")
 
-## ---- , eval = has_microbenchmark----------------------------------------
+## ---- eval = require(microbenchmark)-------------------------------------
 library(microbenchmark)
 bm <- microbenchmark(
   memCompress(x, "gzip"),

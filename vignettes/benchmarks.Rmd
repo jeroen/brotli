@@ -12,7 +12,6 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.width=8, fig.height=4, fig.align = "center") 
-has_microbenchmark <- isTRUE(require(microbenchmark))
 ```
 
 <img src="http://1.bp.blogspot.com/-qVXmEU7Dqi4/TxaSwzfpp3I/AAAAAAAAAOo/WKri5ORZNDE/s1600/Br%25C3%25B6tli.jpg" alt="brotli" style="float: right; margin-left: 20px">
@@ -65,7 +64,7 @@ ggplot(alldata, aes(x = algo, fill = algo, y = ratio)) +
 
 Perhaps the most important performance dimension for internet formats is decompression speed. Clients should be able to decompress quickly, even with limited resources such as on browsers and mobile devices. 
 
-```{r, eval = has_microbenchmark}
+```{r, eval = require(microbenchmark)}
 library(microbenchmark)
 bm <- microbenchmark(
   memDecompress(y1, "gzip"),
@@ -87,7 +86,7 @@ We see that brotli is very similar to gzip in decompression speed. We also see w
 
 So far Brotli showed the best compression ratio, with decompression performance comparable to gzip. But there is no such thing as a free pastry in Switzerland. Here is the caveat: compressing data with brotli is complex and slow:
 
-```{r, eval = has_microbenchmark}
+```{r, eval = require(microbenchmark)}
 library(microbenchmark)
 bm <- microbenchmark(
   memCompress(x, "gzip"),
