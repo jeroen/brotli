@@ -46,7 +46,7 @@ stopifnot(identical(x, brotli_decompress(y4)))
 
 ## Compression ratio
 
-If we compare compression ratios, we can see Brotli significantly outperformes the competition for this example. 
+If we compare compression ratios, we can see Brotli significantly outperforms the competition for this example. 
 
 ```{r}
 # Combine data
