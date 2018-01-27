@@ -10,9 +10,15 @@
 
 SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
 
+  uint32_t qual = INTEGER(quality)[0];
+  uint32_t window = INTEGER(lgwin)[0];
+  if(qual < BROTLI_MIN_QUALITY || qual > BROTLI_MAX_QUALITY)
+    Rf_error("Invalid value for qual:%d", qual);
+  if(window < BROTLI_MIN_WINDOW_BITS || window > BROTLI_MAX_WINDOW_BITS)
+    Rf_error("Invalid value for lgwin:%d", window);
   BrotliEncoderState* state = BrotliEncoderCreateInstance(0, 0, 0);
-  BrotliEncoderSetParameter(state, BROTLI_PARAM_QUALITY, INTEGER(quality)[0]);
-  BrotliEncoderSetParameter(state, BROTLI_PARAM_LGWIN, INTEGER(lgwin)[0]);
+  BrotliEncoderSetParameter(state, BROTLI_PARAM_QUALITY, qual);
+  BrotliEncoderSetParameter(state, BROTLI_PARAM_LGWIN, window);
 
   uint8_t * buf = NULL;
   size_t total_out = 0;
