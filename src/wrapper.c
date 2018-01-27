@@ -7,8 +7,9 @@
 #define STRICT_R_HEADERS
 #define R_NO_REMAP
 #include <Rinternals.h>
+#include <R_ext/Visibility.h>
 
-SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
+attribute_visible SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
 
   uint32_t qual = INTEGER(quality)[0];
   uint32_t window = INTEGER(lgwin)[0];
@@ -52,7 +53,7 @@ SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
   return output;
 }
 
-SEXP R_brotli_decompress(SEXP x){
+attribute_visible SEXP R_brotli_decompress(SEXP x){
 
   /* init input */
   const uint8_t* next_in = RAW(x);

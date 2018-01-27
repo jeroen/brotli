@@ -1,4 +1,5 @@
 PKG_LIBS=-L. -lstatbrotli
+PKG_CFLAGS=$(C_VISIBILITY)
 PKG_CPPFLAGS=-DBROTLI_BUILD_PORTABLE -Iinclude -include config.h
 BINDIR=../inst/bin
 BRO=$(BINDIR)/bro$(WIN)
