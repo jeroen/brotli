@@ -1,11 +1,11 @@
 Package: brotli
 Type: Package
 Title: A Compression Format Optimized for the Web
-Version: 1.1
+Version: 1.2
 Authors@R: c(
-    person("Jeroen", "Ooms", ,"jeroen@berkeley.edu", role = c("aut", "cre")),
-    person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library")
-  )
+    person("Jeroen", "Ooms", ,"jeroen@berkeley.edu", role = c("aut", "cre"),
+      comment = c(ORCID = "0000-0002-4035-0289")),
+    person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library"))
 Description: A lossless compressed data format that uses a combination of the
     LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
     but offers more dense compression.
