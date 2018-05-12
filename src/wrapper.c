@@ -9,7 +9,7 @@
 #include <Rinternals.h>
 #include <R_ext/Visibility.h>
 
-attribute_visible static SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
+attribute_visible SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin){
 
   uint32_t qual = INTEGER(quality)[0];
   uint32_t window = INTEGER(lgwin)[0];
@@ -53,7 +53,7 @@ attribute_visible static SEXP R_brotli_compress(SEXP x, SEXP quality, SEXP lgwin
   return output;
 }
 
-attribute_visible static SEXP R_brotli_decompress(SEXP x){
+attribute_visible SEXP R_brotli_decompress(SEXP x){
 
   /* init input */
   const uint8_t* next_in = RAW(x);
@@ -97,8 +97,7 @@ static const R_CallMethodDef CallEntries[] = {
   {NULL, NULL, 0}
 };
 
-void R_init_brotli(DllInfo *dll)
-{
+void R_init_brotli(DllInfo *dll) {
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
 }
