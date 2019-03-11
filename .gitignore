@@ -1,10 +1,10 @@
 *.so
 *.o
 *.dll
+*.a
 .DS_Store
 .Rproj.user
 .Rhistory
-src/*.a
 src/*.o
 src/*.so
 inst/bin
