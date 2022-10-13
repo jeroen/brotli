@@ -47,7 +47,7 @@ length(memCompress(x, "xz"))
 }
 \references{
 J. Alakuijala and Z. Szabadka (July 2016). \emph{Brotli Compressed
-Data Format}. IETF Internet Draft \url{https://tools.ietf.org/html/rfc7932}.
+Data Format}. IETF Internet Draft \url{https://www.rfc-editor.org/rfc/rfc7932}.
 }
 \seealso{
 \link{memCompress}
