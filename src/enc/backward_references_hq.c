@@ -11,6 +11,7 @@
 #include <string.h>  /* memcpy, memset */
 
 #include "../common/constants.h"
+#include "../common/context.h"
 #include "../common/platform.h"
 #include <brotli/types.h>
 #include "./command.h"
@@ -26,6 +27,7 @@
 extern "C" {
 #endif
 
+/* BrotliCalculateDistanceCodeLimit(BROTLI_MAX_ALLOWED_DISTANCE, 3, 120). */
 #define BROTLI_MAX_EFFECTIVE_DISTANCE_ALPHABET_SIZE 544
 
 static const float kInfinity = 1.7e38f;  /* ~= 2 ^ 127 */
@@ -86,14 +88,10 @@ typedef struct ZopfliCostModel {
 static void InitZopfliCostModel(
     MemoryManager* m, ZopfliCostModel* self, const BrotliDistanceParams* dist,
     size_t num_bytes) {
-  uint32_t distance_histogram_size = dist->alphabet_size;
-  if (distance_histogram_size > BROTLI_MAX_EFFECTIVE_DISTANCE_ALPHABET_SIZE) {
-    distance_histogram_size = BROTLI_MAX_EFFECTIVE_DISTANCE_ALPHABET_SIZE;
-  }
   self->num_bytes_ = num_bytes;
   self->literal_costs_ = BROTLI_ALLOC(m, float, num_bytes + 2);
-  self->cost_dist_ = BROTLI_ALLOC(m, float, dist->alphabet_size);
-  self->distance_histogram_size = distance_histogram_size;
+  self->cost_dist_ = BROTLI_ALLOC(m, float, dist->alphabet_size_limit);
+  self->distance_histogram_size = dist->alphabet_size_limit;
   if (BROTLI_IS_OOM(m)) return;
 }
 
@@ -330,7 +328,7 @@ static size_t ComputeMinimumCopyLength(const float start_cost,
    REQUIRES: nodes[0..pos] satisfies that "ZopfliNode array invariant". */
 static uint32_t ComputeDistanceShortcut(const size_t block_start,
                                         const size_t pos,
-                                        const size_t max_backward,
+                                        const size_t max_backward_limit,
                                         const size_t gap,
                                         const ZopfliNode* nodes) {
   const size_t clen = ZopfliNodeCopyLength(&nodes[pos]);
@@ -338,13 +336,13 @@ static uint32_t ComputeDistanceShortcut(const size_t block_start,
   const size_t dist = ZopfliNodeCopyDistance(&nodes[pos]);
   /* Since |block_start + pos| is the end position of the command, the copy part
      starts from |block_start + pos - clen|. Distances that are greater than
-     this or greater than |max_backward| are static dictionary references, and
-     do not update the last distances. Also distance code 0 (last distance)
-     does not update the last distances. */
+     this or greater than |max_backward_limit| + |gap| are static dictionary
+     references, and do not update the last distances.
+     Also distance code 0 (last distance) does not update the last distances. */
   if (pos == 0) {
     return 0;
   } else if (dist + clen <= block_start + pos + gap &&
-             dist <= max_backward + gap &&
+             dist <= max_backward_limit + gap &&
              ZopfliNodeDistanceCode(&nodes[pos]) > 0) {
     return (uint32_t)pos;
   } else {
@@ -408,9 +406,12 @@ static size_t UpdateNodes(
     const int* starting_dist_cache, const size_t num_matches,
     const BackwardMatch* matches, const ZopfliCostModel* model,
     StartPosQueue* queue, ZopfliNode* nodes) {
+  const size_t stream_offset = params->stream_offset;
   const size_t cur_ix = block_start + pos;
   const size_t cur_ix_masked = cur_ix & ringbuffer_mask;
   const size_t max_distance = BROTLI_MIN(size_t, cur_ix, max_backward_limit);
+  const size_t dictionary_start = BROTLI_MIN(size_t,
+      cur_ix + stream_offset, max_backward_limit);
   const size_t max_len = num_bytes - pos;
   const size_t max_zopfli_len = MaxZopfliLen(params);
   const size_t max_iters = MaxZopfliCandidates(params);
@@ -419,8 +420,8 @@ static size_t UpdateNodes(
   size_t k;
   size_t gap = 0;
 
-  EvaluateNode(block_start, pos, max_backward_limit, gap, starting_dist_cache,
-      model, queue, nodes);
+  EvaluateNode(block_start + stream_offset, pos, max_backward_limit, gap,
+      starting_dist_cache, model, queue, nodes);
 
   {
     const PosData* posdata = StartPosQueueAt(queue, 0);
@@ -453,10 +454,12 @@ static size_t UpdateNodes(
       if (cur_ix_masked + best_len > ringbuffer_mask) {
         break;
       }
-      if (BROTLI_PREDICT_FALSE(backward > max_distance + gap)) {
+      if (BROTLI_PREDICT_FALSE(backward > dictionary_start + gap)) {
+        /* Word dictionary -> ignore. */
         continue;
       }
       if (backward <= max_distance) {
+        /* Regular backward reference. */
         if (prev_ix >= cur_ix) {
           continue;
         }
@@ -470,6 +473,8 @@ static size_t UpdateNodes(
                                        &ringbuffer[cur_ix_masked],
                                        max_len);
       } else {
+        /* "Gray" area. It is addressable by decoder, but this encoder
+           instance does not have that data -> should not touch it. */
         continue;
       }
       {
@@ -504,7 +509,7 @@ static size_t UpdateNodes(
         BackwardMatch match = matches[j];
         size_t dist = match.distance;
         BROTLI_BOOL is_dictionary_match =
-            TO_BROTLI_BOOL(dist > max_distance + gap);
+            TO_BROTLI_BOOL(dist > dictionary_start + gap);
         /* We already tried all possible last distance matches, so we can use
            normal distance code here. */
         size_t dist_code = dist + BROTLI_NUM_DISTANCE_SHORT_CODES - 1;
@@ -564,14 +569,11 @@ static size_t ComputeShortestPathFromNodes(size_t num_bytes,
 
 /* REQUIRES: nodes != NULL and len(nodes) >= num_bytes + 1 */
 void BrotliZopfliCreateCommands(const size_t num_bytes,
-                                const size_t block_start,
-                                const size_t max_backward_limit,
-                                const ZopfliNode* nodes,
-                                int* dist_cache,
-                                size_t* last_insert_len,
-                                const BrotliEncoderParams* params,
-                                Command* commands,
-                                size_t* num_literals) {
+    const size_t block_start, const ZopfliNode* nodes, int* dist_cache,
+    size_t* last_insert_len, const BrotliEncoderParams* params,
+    Command* commands, size_t* num_literals) {
+  const size_t stream_offset = params->stream_offset;
+  const size_t max_backward_limit = BROTLI_MAX_BACKWARD_LIMIT(params->lgwin);
   size_t pos = 0;
   uint32_t offset = nodes[0].u.next;
   size_t i;
@@ -589,9 +591,10 @@ void BrotliZopfliCreateCommands(const size_t num_bytes,
     {
       size_t distance = ZopfliNodeCopyDistance(next);
       size_t len_code = ZopfliNodeLengthCode(next);
-      size_t max_distance =
-          BROTLI_MIN(size_t, block_start + pos, max_backward_limit);
-      BROTLI_BOOL is_dictionary = TO_BROTLI_BOOL(distance > max_distance + gap);
+      size_t dictionary_start = BROTLI_MIN(size_t,
+          block_start + pos + stream_offset, max_backward_limit);
+      BROTLI_BOOL is_dictionary =
+          TO_BROTLI_BOOL(distance > dictionary_start + gap);
       size_t dist_code = ZopfliNodeDistanceCode(next);
       InitCommand(&commands[i], &params->dist, insert_length,
           copy_length, (int)len_code - (int)copy_length, dist_code);
@@ -610,18 +613,13 @@ void BrotliZopfliCreateCommands(const size_t num_bytes,
   *last_insert_len += num_bytes - pos;
 }
 
-static size_t ZopfliIterate(size_t num_bytes,
-                            size_t position,
-                            const uint8_t* ringbuffer,
-                            size_t ringbuffer_mask,
-                            const BrotliEncoderParams* params,
-                            const size_t max_backward_limit,
-                            const size_t gap,
-                            const int* dist_cache,
-                            const ZopfliCostModel* model,
-                            const uint32_t* num_matches,
-                            const BackwardMatch* matches,
-                            ZopfliNode* nodes) {
+static size_t ZopfliIterate(size_t num_bytes, size_t position,
+    const uint8_t* ringbuffer, size_t ringbuffer_mask,
+    const BrotliEncoderParams* params, const size_t gap, const int* dist_cache,
+    const ZopfliCostModel* model, const uint32_t* num_matches,
+    const BackwardMatch* matches, ZopfliNode* nodes) {
+  const size_t stream_offset = params->stream_offset;
+  const size_t max_backward_limit = BROTLI_MAX_BACKWARD_LIMIT(params->lgwin);
   const size_t max_zopfli_len = MaxZopfliLen(params);
   StartPosQueue queue;
   size_t cur_match_pos = 0;
@@ -645,8 +643,8 @@ static size_t ZopfliIterate(size_t num_bytes,
       while (skip) {
         i++;
         if (i + 3 >= num_bytes) break;
-        EvaluateNode(position, i, max_backward_limit, gap, dist_cache, model,
-            &queue, nodes);
+        EvaluateNode(position + stream_offset, i, max_backward_limit, gap,
+            dist_cache, model, &queue, nodes);
         cur_match_pos += num_matches[i];
         skip--;
       }
@@ -656,11 +654,12 @@ static size_t ZopfliIterate(size_t num_bytes,
 }
 
 /* REQUIRES: nodes != NULL and len(nodes) >= num_bytes + 1 */
-size_t BrotliZopfliComputeShortestPath(MemoryManager* m,
-    size_t num_bytes, size_t position, const uint8_t* ringbuffer,
-    size_t ringbuffer_mask, const BrotliEncoderParams* params,
-    const size_t max_backward_limit, const int* dist_cache, HasherHandle hasher,
-    ZopfliNode* nodes) {
+size_t BrotliZopfliComputeShortestPath(MemoryManager* m, size_t num_bytes,
+    size_t position, const uint8_t* ringbuffer, size_t ringbuffer_mask,
+    ContextLut literal_context_lut, const BrotliEncoderParams* params,
+    const int* dist_cache, Hasher* hasher, ZopfliNode* nodes) {
+  const size_t stream_offset = params->stream_offset;
+  const size_t max_backward_limit = BROTLI_MAX_BACKWARD_LIMIT(params->lgwin);
   const size_t max_zopfli_len = MaxZopfliLen(params);
   ZopfliCostModel model;
   StartPosQueue queue;
@@ -670,6 +669,7 @@ size_t BrotliZopfliComputeShortestPath(MemoryManager* m,
   size_t i;
   size_t gap = 0;
   size_t lz_matches_offset = 0;
+  BROTLI_UNUSED(literal_context_lut);
   nodes[0].length = 0;
   nodes[0].u.cost = 0;
   InitZopfliCostModel(m, &model, &params->dist, num_bytes);
@@ -680,10 +680,14 @@ size_t BrotliZopfliComputeShortestPath(MemoryManager* m,
   for (i = 0; i + HashTypeLengthH10() - 1 < num_bytes; i++) {
     const size_t pos = position + i;
     const size_t max_distance = BROTLI_MIN(size_t, pos, max_backward_limit);
+    const size_t dictionary_start = BROTLI_MIN(size_t,
+        pos + stream_offset, max_backward_limit);
     size_t skip;
-    size_t num_matches = FindAllMatchesH10(hasher, &params->dictionary,
-        ringbuffer, ringbuffer_mask, pos, num_bytes - i, max_distance, gap,
-        params, &matches[lz_matches_offset]);
+    size_t num_matches;
+    num_matches = FindAllMatchesH10(&hasher->privat._H10,
+        &params->dictionary,
+        ringbuffer, ringbuffer_mask, pos, num_bytes - i, max_distance,
+        dictionary_start + gap, params, &matches[lz_matches_offset]);
     if (num_matches > 0 &&
         BackwardMatchLength(&matches[num_matches - 1]) > max_zopfli_len) {
       matches[0] = matches[num_matches - 1];
@@ -698,14 +702,15 @@ size_t BrotliZopfliComputeShortestPath(MemoryManager* m,
     }
     if (skip > 1) {
       /* Add the tail of the copy to the hasher. */
-      StoreRangeH10(hasher, ringbuffer, ringbuffer_mask, pos + 1, BROTLI_MIN(
+      StoreRangeH10(&hasher->privat._H10,
+          ringbuffer, ringbuffer_mask, pos + 1, BROTLI_MIN(
           size_t, pos + skip, store_end));
       skip--;
       while (skip) {
         i++;
         if (i + HashTypeLengthH10() - 1 >= num_bytes) break;
-        EvaluateNode(position, i, max_backward_limit, gap, dist_cache, &model,
-            &queue, nodes);
+        EvaluateNode(position + stream_offset, i, max_backward_limit, gap,
+            dist_cache, &model, &queue, nodes);
         skip--;
       }
     }
@@ -714,30 +719,29 @@ size_t BrotliZopfliComputeShortestPath(MemoryManager* m,
   return ComputeShortestPathFromNodes(num_bytes, nodes);
 }
 
-void BrotliCreateZopfliBackwardReferences(MemoryManager* m,
-    size_t num_bytes, size_t position, const uint8_t* ringbuffer,
-    size_t ringbuffer_mask, const BrotliEncoderParams* params,
-    HasherHandle hasher, int* dist_cache, size_t* last_insert_len,
+void BrotliCreateZopfliBackwardReferences(MemoryManager* m, size_t num_bytes,
+    size_t position, const uint8_t* ringbuffer, size_t ringbuffer_mask,
+    ContextLut literal_context_lut, const BrotliEncoderParams* params,
+    Hasher* hasher, int* dist_cache, size_t* last_insert_len,
     Command* commands, size_t* num_commands, size_t* num_literals) {
-  const size_t max_backward_limit = BROTLI_MAX_BACKWARD_LIMIT(params->lgwin);
-  ZopfliNode* nodes;
-  nodes = BROTLI_ALLOC(m, ZopfliNode, num_bytes + 1);
-  if (BROTLI_IS_OOM(m)) return;
+  ZopfliNode* nodes = BROTLI_ALLOC(m, ZopfliNode, num_bytes + 1);
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(nodes)) return;
   BrotliInitZopfliNodes(nodes, num_bytes + 1);
-  *num_commands += BrotliZopfliComputeShortestPath(m,
-      num_bytes, position, ringbuffer, ringbuffer_mask,
-      params, max_backward_limit, dist_cache, hasher, nodes);
+  *num_commands += BrotliZopfliComputeShortestPath(m, num_bytes,
+      position, ringbuffer, ringbuffer_mask, literal_context_lut, params,
+      dist_cache, hasher, nodes);
   if (BROTLI_IS_OOM(m)) return;
-  BrotliZopfliCreateCommands(num_bytes, position, max_backward_limit, nodes,
-      dist_cache, last_insert_len, params, commands, num_literals);
+  BrotliZopfliCreateCommands(num_bytes, position, nodes, dist_cache,
+      last_insert_len, params, commands, num_literals);
   BROTLI_FREE(m, nodes);
 }
 
-void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
-    size_t num_bytes, size_t position, const uint8_t* ringbuffer,
-    size_t ringbuffer_mask, const BrotliEncoderParams* params,
-    HasherHandle hasher, int* dist_cache, size_t* last_insert_len,
+void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m, size_t num_bytes,
+    size_t position, const uint8_t* ringbuffer, size_t ringbuffer_mask,
+    ContextLut literal_context_lut, const BrotliEncoderParams* params,
+    Hasher* hasher, int* dist_cache, size_t* last_insert_len,
     Command* commands, size_t* num_commands, size_t* num_literals) {
+  const size_t stream_offset = params->stream_offset;
   const size_t max_backward_limit = BROTLI_MAX_BACKWARD_LIMIT(params->lgwin);
   uint32_t* num_matches = BROTLI_ALLOC(m, uint32_t, num_bytes);
   size_t matches_size = 4 * num_bytes;
@@ -754,10 +758,16 @@ void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
   BackwardMatch* matches = BROTLI_ALLOC(m, BackwardMatch, matches_size);
   size_t gap = 0;
   size_t shadow_matches = 0;
-  if (BROTLI_IS_OOM(m)) return;
+  BROTLI_UNUSED(literal_context_lut);
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(num_matches) ||
+      BROTLI_IS_NULL(matches)) {
+    return;
+  }
   for (i = 0; i + HashTypeLengthH10() - 1 < num_bytes; ++i) {
     const size_t pos = position + i;
     size_t max_distance = BROTLI_MIN(size_t, pos, max_backward_limit);
+    size_t dictionary_start = BROTLI_MIN(size_t,
+        pos + stream_offset, max_backward_limit);
     size_t max_length = num_bytes - i;
     size_t num_found_matches;
     size_t cur_match_end;
@@ -766,9 +776,11 @@ void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
     BROTLI_ENSURE_CAPACITY(m, BackwardMatch, matches, matches_size,
         cur_match_pos + MAX_NUM_MATCHES_H10 + shadow_matches);
     if (BROTLI_IS_OOM(m)) return;
-    num_found_matches = FindAllMatchesH10(hasher,
-        &params->dictionary, ringbuffer, ringbuffer_mask, pos, max_length,
-        max_distance, gap, params, &matches[cur_match_pos + shadow_matches]);
+    num_found_matches = FindAllMatchesH10(&hasher->privat._H10,
+        &params->dictionary,
+        ringbuffer, ringbuffer_mask, pos, max_length,
+        max_distance, dictionary_start + gap, params,
+        &matches[cur_match_pos + shadow_matches]);
     cur_match_end = cur_match_pos + num_found_matches;
     for (j = cur_match_pos; j + 1 < cur_match_end; ++j) {
       BROTLI_DCHECK(BackwardMatchLength(&matches[j]) <=
@@ -782,7 +794,8 @@ void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
         matches[cur_match_pos++] = matches[cur_match_end - 1];
         num_matches[i] = 1;
         /* Add the tail of the copy to the hasher. */
-        StoreRangeH10(hasher, ringbuffer, ringbuffer_mask, pos + 1,
+        StoreRangeH10(&hasher->privat._H10,
+                      ringbuffer, ringbuffer_mask, pos + 1,
                       BROTLI_MIN(size_t, pos + match_len, store_end));
         memset(&num_matches[i + 1], 0, skip * sizeof(num_matches[0]));
         i += skip;
@@ -796,7 +809,7 @@ void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
   memcpy(orig_dist_cache, dist_cache, 4 * sizeof(dist_cache[0]));
   orig_num_commands = *num_commands;
   nodes = BROTLI_ALLOC(m, ZopfliNode, num_bytes + 1);
-  if (BROTLI_IS_OOM(m)) return;
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(nodes)) return;
   InitZopfliCostModel(m, &model, &params->dist, num_bytes);
   if (BROTLI_IS_OOM(m)) return;
   for (i = 0; i < 2; i++) {
@@ -814,10 +827,10 @@ void BrotliCreateHqZopfliBackwardReferences(MemoryManager* m,
     *last_insert_len = orig_last_insert_len;
     memcpy(dist_cache, orig_dist_cache, 4 * sizeof(dist_cache[0]));
     *num_commands += ZopfliIterate(num_bytes, position, ringbuffer,
-        ringbuffer_mask, params, max_backward_limit, gap, dist_cache,
-        &model, num_matches, matches, nodes);
-    BrotliZopfliCreateCommands(num_bytes, position, max_backward_limit,
-        nodes, dist_cache, last_insert_len, params, commands, num_literals);
+        ringbuffer_mask, params, gap, dist_cache, &model, num_matches, matches,
+        nodes);
+    BrotliZopfliCreateCommands(num_bytes, position, nodes, dist_cache,
+        last_insert_len, params, commands, num_literals);
   }
   CleanupZopfliCostModel(m, &model);
   BROTLI_FREE(m, nodes);
