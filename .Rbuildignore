@@ -7,3 +7,4 @@
 ^appveyor\.yml$
 ^inst/bin$
 ^README.md$
+^\.github$
