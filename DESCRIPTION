@@ -6,13 +6,11 @@ Authors@R: c(
     person("Jeroen", "Ooms", ,"jeroenooms@gmail.com", role = c("aut", "cre"),
       comment = c(ORCID = "0000-0002-4035-0289")),
     person("Google, Inc", role = c("aut","cph"), comment = "Brotli C++ library"))
-Description: A lossless compressed data format that uses a combination of the
-    LZ77 algorithm and Huffman coding. Brotli is similar in speed to deflate (gzip)
-    but offers more dense compression.
+Description: A lossless compressed data format that uses a combination 
+    of the LZ77 algorithm and Huffman coding <https://www.rfc-editor.org/rfc/rfc7932>.
+    Brotli is similar in speed to deflate (gzip) but offers more dense compression.
 License: MIT + file LICENSE
-URL: https://www.rfc-editor.org/rfc/rfc7932 (spec)
-    https://github.com/google/brotli#readme (upstream)
-    https://github.com/jeroen/brotli#read (devel)
+URL: https://jeroen.r-universe.dev/brotli
 BugReports: https://github.com/jeroen/brotli/issues
 VignetteBuilder: knitr, R.rsp
 Suggests:
