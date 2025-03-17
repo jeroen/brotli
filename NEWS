@@ -1,3 +1,6 @@
+1.3.2
+  - Fix parallel make, cleanup after build.
+
 1.3.0
   - Update libbrotli to v1.0.9
 

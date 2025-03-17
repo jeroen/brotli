@@ -13,7 +13,7 @@ LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brot
 	enc/encoder_dict.o common/platform.o common/context.o common/constants.o enc/command.o \
 	enc/fast_log.o
 
-all: clean $(BRO)
+all: $(SHLIB) $(BRO) cleanup
 
 $(SHLIB): $(STATLIB)
 
@@ -24,5 +24,5 @@ $(BRO): $(STATLIB) tools/brotli.o
 $(STATLIB): $(LIBBROTLI)
 	$(AR) rcs $(STATLIB) $(LIBBROTLI)
 
-clean:
-	rm -f $(LIBBROTLI) $(OBJECTS) $(SHLIB) $(BRO) $(STATLIB) tools/brotli.o
+cleanup: $(SHLIB)
+	rm -f $(LIBBROTLI) $(BRO) $(STATLIB) tools/brotli.o
