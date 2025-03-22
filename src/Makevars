@@ -25,4 +25,4 @@ $(STATLIB): $(LIBBROTLI)
 	$(AR) rcs $(STATLIB) $(LIBBROTLI)
 
 cleanup: $(SHLIB)
-	rm -f $(LIBBROTLI) $(BRO) $(STATLIB) tools/brotli.o
+	@rm -f $(LIBBROTLI) $(BRO) $(STATLIB) tools/brotli.o
