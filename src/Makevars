@@ -5,13 +5,14 @@ BINDIR=../inst/bin
 BRO=$(BINDIR)/bro$(WIN)
 STATLIB=enc/libstatbrotli.a
 
-LIBBROTLI=enc/backward_references.o enc/bit_cost.o enc/block_splitter.o enc/brotli_bit_stream.o \
-	enc/cluster.o enc/compress_fragment_two_pass.o enc/compress_fragment.o enc/encode.o \
-	enc/entropy_encode.o enc/histogram.o enc/literal_cost.o enc/memory.o enc/metablock.o \
-	enc/static_dict.o enc/utf8_util.o dec/bit_reader.o dec/huffman.o dec/state.o dec/decode.o \
-	common/dictionary.o enc/backward_references_hq.o enc/dictionary_hash.o common/transform.o \
-	enc/encoder_dict.o common/platform.o common/context.o common/constants.o enc/command.o \
-	enc/fast_log.o
+LIBBROTLI=common/constants.o common/context.o common/dictionary.o common/platform.o \
+	common/shared_dictionary.o common/transform.o dec/bit_reader.o dec/decode.o dec/huffman.o \
+	dec/prefix.o dec/state.o dec/static_init.o enc/backward_references.o \
+	enc/backward_references_hq.o enc/bit_cost.o enc/block_splitter.o enc/brotli_bit_stream.o \
+	enc/cluster.o enc/command.o enc/compound_dictionary.o enc/compress_fragment.o \
+	enc/compress_fragment_two_pass.o enc/dictionary_hash.o enc/encode.o enc/encoder_dict.o \
+	enc/entropy_encode.o enc/fast_log.o enc/histogram.o enc/literal_cost.o enc/memory.o \
+	enc/metablock.o enc/static_dict.o enc/static_dict_lut.o enc/static_init.o enc/utf8_util.o
 
 all: $(SHLIB) $(BRO) cleanup
 
@@ -23,7 +24,7 @@ $(BRO): $(STATLIB) tools/brotli.o
 
 $(STATLIB): $(LIBBROTLI)
 
-cleanup: $(SHLIB)
+cleanup: $(SHLIB) $(BRO)
 	@rm -f $(LIBBROTLI) $(BRO) $(STATLIB) tools/brotli.o
 
 # On Windows this rule is masked by Makeconf in base R
