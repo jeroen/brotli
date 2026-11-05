@@ -21,7 +21,7 @@
 #' @param quality value between 0 and 11
 #' @param window log of window size
 #' @references J. Alakuijala and Z. Szabadka (July 2016). \emph{Brotli Compressed
-#' Data Format}. IETF Internet Draft \url{https://tools.ietf.org/html/rfc7932}.
+#' Data Format}. IETF Internet Draft \url{https://www.rfc-editor.org/info/rfc9841/}.
 #' @examples # Simple example
 #' myfile <- file.path(R.home(), "COPYING")
 #' x <- readBin(myfile, raw(), file.info(myfile)$size)
