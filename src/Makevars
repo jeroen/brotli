@@ -24,7 +24,7 @@ $(BRO): $(STATLIB) tools/brotli.o
 
 $(STATLIB): $(LIBBROTLI)
 
-cleanup: $(SHLIB)
+cleanup: $(SHLIB) $(BRO)
 	@rm -f $(LIBBROTLI) $(BRO) $(STATLIB) tools/brotli.o
 
 # On Windows this rule is masked by Makeconf in base R
